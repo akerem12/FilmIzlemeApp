@@ -12,6 +12,7 @@ namespace Entities.Concrete
         public String Username { get; set; }
         public String Email {  get; set; }
         public String Password { get; set; }
+        public String Role { get; set; } = "User";
         public ICollection<WatchedFilm> WatchedByUsers { get; set; } = new List<WatchedFilm>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
 

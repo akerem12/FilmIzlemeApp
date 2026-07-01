@@ -85,6 +85,11 @@ export interface AuthUser {
   id: number;
   username: string;
   email: string;
+  role: string;
+}
+
+export interface UserRoleUpdateDto {
+  role: string;
 }
 
 // ---- Watched / Watchlist ----

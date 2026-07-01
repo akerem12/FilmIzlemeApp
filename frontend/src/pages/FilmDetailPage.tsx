@@ -106,7 +106,8 @@ export default function FilmDetailPage() {
   };
 
   const handleDelete = async () => {
-    await deleteFilm(filmId);
+    if (!user) return;
+    await deleteFilm(filmId, user.id);
     navigate("/");
   };
 
@@ -131,12 +132,16 @@ export default function FilmDetailPage() {
           <Button variant={isWatched ? "outlined" : "contained"} onClick={handleToggleWatched}>
             {isWatched ? "İzlenmedi Olarak İşaretle" : "İzledim Olarak İşaretle"}
           </Button>
-          <Button component={Link} to={`/films/${filmId}/edit`} variant="text">
-            Düzenle
-          </Button>
-          <Button color="error" variant="text" onClick={() => setDeleteOpen(true)}>
-            Sil
-          </Button>
+          {user.role === "Admin" && (
+            <>
+              <Button component={Link} to={`/films/${filmId}/edit`} variant="text">
+                Düzenle
+              </Button>
+              <Button color="error" variant="text" onClick={() => setDeleteOpen(true)}>
+                Sil
+              </Button>
+            </>
+          )}
         </Stack>
       )}
 

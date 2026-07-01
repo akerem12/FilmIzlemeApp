@@ -3,6 +3,7 @@ import { Container, Typography } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { getFilm, updateFilm } from "../api/films";
 import { getErrorMessage } from "../api/errorMessage";
+import { useAuth } from "../context/AuthContext";
 import type { FilmDetail, FilmCreateDto, FilmUpdateDto } from "../types";
 import FilmForm from "../components/FilmForm";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -11,6 +12,7 @@ import ErrorAlert from "../components/ErrorAlert";
 export default function FilmEditPage() {
   const { id } = useParams<{ id: string }>();
   const filmId = Number(id);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [film, setFilm] = useState<FilmDetail | null>(null);
@@ -27,10 +29,11 @@ export default function FilmEditPage() {
   }, [filmId]);
 
   const handleSubmit = async (dto: FilmCreateDto | FilmUpdateDto) => {
+    if (!user) return;
     setSubmitting(true);
     setSubmitError(null);
     try {
-      await updateFilm(filmId, dto as FilmUpdateDto);
+      await updateFilm(filmId, dto as FilmUpdateDto, user.id);
       navigate(`/films/${filmId}`);
     } catch (err) {
       setSubmitError(getErrorMessage(err, "Film güncellenemedi."));

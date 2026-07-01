@@ -34,9 +34,16 @@ export default function Navbar() {
               <Button color="inherit" component={Link} to="/watched">
                 İzlediklerim
               </Button>
-              <Button color="inherit" component={Link} to="/films/new">
-                Film Ekle
-              </Button>
+              {user.role === "Admin" && (
+                <>
+                  <Button color="inherit" component={Link} to="/films/new">
+                    Film Ekle
+                  </Button>
+                  <Button color="inherit" component={Link} to="/admin/users">
+                    Kullanıcılar
+                  </Button>
+                </>
+              )}
               <Button color="inherit" component={Link} to="/profile">
                 {user.username}
               </Button>

@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
             if (user == null || user.Password != dto.Password)
                 return Unauthorized(new { message = "Hatalı giriş." });
 
-            return Ok(new { user.Id, user.Username, user.Email });
+            return Ok(new { user.Id, user.Username, user.Email, user.Role });
         }
 
         [HttpGet("{id}")]
@@ -51,7 +51,8 @@ namespace WebAPI.Controllers
             {
                 user.Id,
                 user.Username,
-                user.Email
+                user.Email,
+                user.Role
             });
         }
         [HttpGet]
@@ -62,10 +63,26 @@ namespace WebAPI.Controllers
                 {
                     u.Id,
                     u.Username,
-                    u.Email
+                    u.Email,
+                    u.Role
                 }).ToList();
 
             return Ok(users);
+        }
+
+        [HttpPut("{id}/role")]
+        public IActionResult UpdateRole(int id, [FromBody] UserRoleUpdateDto dto, [FromQuery] int adminId)
+        {
+            var admin = _userService.GetById(adminId);
+            if (admin == null || admin.Role != "Admin")
+                return StatusCode(403, new { message = "Bu işlem için admin yetkisi gereklidir." });
+
+            var user = _userService.GetById(id);
+            if (user == null) return NotFound();
+
+            user.Role = dto.Role;
+            _userService.Update(user);
+            return Ok(new { message = "Kullanıcı rolü güncellendi." });
         }
 
 

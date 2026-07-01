@@ -4,7 +4,7 @@
     {
       "name": "backend",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "backend/WebAPI"],
+      "runtimeArgs": ["run", "--project", "backend/WebAPI", "--launch-profile", "http"],
       "port": 5237
     },
     {
