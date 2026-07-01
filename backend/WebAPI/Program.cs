@@ -9,15 +9,25 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ??? Veritabaný baðlantýsý (SQL Server)
+// ??? Veritabanï¿½ baï¿½lantï¿½sï¿½ (SQL Server)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
-// ?? Service ve Repository baðýmlýlýklarý (DI)
+
+// ?? Service ve Repository baï¿½ï¿½mlï¿½lï¿½klarï¿½ (DI)
 builder.Services.AddScoped<IFilmService, FilmManager>();
 builder.Services.AddScoped<IFilmRepository, EfFilmRepository>();
 
@@ -40,7 +50,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ?? Swagger aktif (geliþtirme ortamý)
+// ?? Swagger aktif (geliï¿½tirme ortamï¿½)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -48,6 +58,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("FrontendPolicy");
 
 app.UseAuthorization();
 
