@@ -11,10 +11,18 @@ namespace WebAPI.Controllers
     public class FilmController : ControllerBase
     {
         private readonly IFilmService _filmService;
+        private readonly IUserService _userService;
 
-        public FilmController(IFilmService filmService)
+        public FilmController(IFilmService filmService, IUserService userService)
         {
             _filmService = filmService;
+            _userService = userService;
+        }
+
+        private bool IsAdmin(int userId)
+        {
+            var user = _userService.GetById(userId);
+            return user != null && user.Role == "Admin";
         }
 
         [HttpGet]
@@ -91,8 +99,11 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add([FromBody] FilmCreateDto filmDto)
+        public IActionResult Add([FromBody] FilmCreateDto filmDto, [FromQuery] int userId)
         {
+            if (!IsAdmin(userId))
+                return StatusCode(403, new { message = "Bu işlem için admin yetkisi gereklidir." });
+
             var film = new Film
             {
                 Title = filmDto.Title,
@@ -113,7 +124,10 @@ namespace WebAPI.Controllers
 
         
         [HttpDelete("{id:int}")]
-        public IActionResult DeleteFilm(int id) {
+        public IActionResult DeleteFilm(int id, [FromQuery] int userId) {
+            if (!IsAdmin(userId))
+                return StatusCode(403, new { message = "Bu işlem için admin yetkisi gereklidir." });
+
             var film = _filmService.getId(id);
             if (film == null)
                 return NotFound();
@@ -124,8 +138,11 @@ namespace WebAPI.Controllers
 
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] FilmUpdateDto dto)
+        public IActionResult Update(int id, [FromBody] FilmUpdateDto dto, [FromQuery] int userId)
         {
+            if (!IsAdmin(userId))
+                return StatusCode(403, new { message = "Bu işlem için admin yetkisi gereklidir." });
+
             var film = _filmService.getId(id);
             if (film == null) return NotFound();
 

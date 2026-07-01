@@ -5,10 +5,11 @@ export const getFilms = () => apiClient.get<FilmListItem[]>("/Film").then((r) =>
 
 export const getFilm = (id: number) => apiClient.get<FilmDetail>(`/Film/${id}`).then((r) => r.data);
 
-export const createFilm = (dto: FilmCreateDto) =>
-  apiClient.post("/Film", dto).then((r) => r.data);
+export const createFilm = (dto: FilmCreateDto, adminId: number) =>
+  apiClient.post("/Film", dto, { params: { userId: adminId } }).then((r) => r.data);
 
-export const updateFilm = (id: number, dto: FilmUpdateDto) =>
-  apiClient.put(`/Film/${id}`, dto).then((r) => r.data);
+export const updateFilm = (id: number, dto: FilmUpdateDto, adminId: number) =>
+  apiClient.put(`/Film/${id}`, dto, { params: { userId: adminId } }).then((r) => r.data);
 
-export const deleteFilm = (id: number) => apiClient.delete(`/Film/${id}`).then((r) => r.data);
+export const deleteFilm = (id: number, adminId: number) =>
+  apiClient.delete(`/Film/${id}`, { params: { userId: adminId } }).then((r) => r.data);
