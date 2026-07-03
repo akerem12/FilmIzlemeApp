@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
-import { Container, Typography, List, ListItem, ListItemText, Button, Chip } from "@mui/material";
+import { Container, Typography, Button, Chip, Box, Paper, Avatar, Stack } from "@mui/material";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { getUsers, updateUserRole } from "../api/users";
 import { getErrorMessage } from "../api/errorMessage";
 import { useAuth } from "../context/AuthContext";
 import type { AuthUser } from "../types";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
+import { GOLD } from "../theme";
+
+const AVATAR_COLORS = ["#e57373", "#64b5f6", "#81c784", "#ba68c8", "#ffb74d", "#4dd0e1"];
+
+function avatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
 
 export default function AdminUsersPage() {
   const { user: currentAdmin } = useAuth();
@@ -34,38 +44,68 @@ export default function AdminUsersPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Container sx={{ py: 3 }} maxWidth="md">
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Kullanıcılar
-      </Typography>
+    <Container sx={{ py: 5 }} maxWidth="md" className="fade-in-up">
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+        <AdminPanelSettingsIcon sx={{ color: GOLD, fontSize: 32 }} />
+        <Typography variant="h4">Kullanıcılar</Typography>
+      </Box>
       {error && <ErrorAlert message={error} />}
-      <List>
+      <Stack spacing={1.5}>
         {users.map((u) => (
-          <ListItem
+          <Paper
             key={u.id}
-            divider
-            secondaryAction={
-              <Button
-                size="small"
-                variant="outlined"
-                disabled={u.id === currentAdmin?.id}
-                onClick={() => handleToggleRole(u)}
-              >
-                {u.role === "Admin" ? "Admin Yetkisini Kaldır" : "Admin Yap"}
-              </Button>
-            }
+            elevation={0}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              p: 1.5,
+              border: "1px solid rgba(255,255,255,0.06)",
+              backgroundColor: "rgba(255,255,255,0.02)",
+            }}
           >
-            <ListItemText
-              primary={
-                <>
-                  {u.username} <Chip label={u.role} size="small" sx={{ ml: 1 }} />
-                </>
-              }
-              secondary={u.email}
-            />
-          </ListItem>
+            <Avatar
+              sx={{
+                width: 42,
+                height: 42,
+                fontWeight: 700,
+                bgcolor: u.role === "Admin" ? GOLD : avatarColor(u.username),
+                color: "#0b0f19",
+              }}
+            >
+              {u.username.slice(0, 2).toUpperCase()}
+            </Avatar>
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography noWrap sx={{ fontWeight: 700 }}>
+                  {u.username}
+                </Typography>
+                <Chip
+                  label={u.role}
+                  size="small"
+                  sx={{
+                    backgroundColor:
+                      u.role === "Admin" ? "rgba(245,197,24,0.15)" : "rgba(255,255,255,0.08)",
+                    color: u.role === "Admin" ? GOLD : "text.secondary",
+                  }}
+                />
+              </Box>
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {u.email}
+              </Typography>
+            </Box>
+            <Button
+              size="small"
+              variant="outlined"
+              disabled={u.id === currentAdmin?.id}
+              onClick={() => handleToggleRole(u)}
+              sx={{ flexShrink: 0 }}
+            >
+              {u.role === "Admin" ? "Admin Yetkisini Kaldır" : "Admin Yap"}
+            </Button>
+          </Paper>
         ))}
-      </List>
+      </Stack>
     </Container>
   );
 }

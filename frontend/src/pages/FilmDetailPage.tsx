@@ -6,10 +6,21 @@ import {
   Chip,
   Button,
   Stack,
+  Box,
   Dialog,
   DialogTitle,
   DialogActions,
 } from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import PersonIcon from "@mui/icons-material/Person";
+import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
+import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { getFilm, deleteFilm } from "../api/films";
 import { getReviewsByFilm, addReview } from "../api/reviews";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../api/watchlist";
@@ -21,6 +32,8 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
 import ReviewList from "../components/ReviewList";
 import ReviewForm from "../components/ReviewForm";
+import { posterGradient } from "../utils/posterGradient";
+import { GOLD } from "../theme";
 
 export default function FilmDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -116,53 +129,138 @@ export default function FilmDetailPage() {
   if (!film) return null;
 
   return (
-    <Container sx={{ py: 3 }} maxWidth="md">
-      <Typography variant="h4">{film.title}</Typography>
-      <Typography color="text.secondary" sx={{ mb: 1 }}>
-        {film.year} · {film.time} dk · Yönetmen: {film.directorName}
-      </Typography>
-      <Chip label={`${film.rate.toFixed(1)} / 10`} color="warning" sx={{ mb: 2 }} />
-      <Typography sx={{ mb: 3 }}>{film.description}</Typography>
+    <Box className="fade-in-up">
+      {/* Backdrop başlık alanı */}
+      <Box
+        sx={{
+          position: "relative",
+          background: posterGradient(film.title),
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to bottom, rgba(11,15,25,0.35), rgba(11,15,25,0.92) 90%)",
+          }}
+        />
+        <Container sx={{ position: "relative", py: { xs: 6, md: 9 } }}>
+          <Typography
+            sx={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(44px, 7vw, 80px)",
+              letterSpacing: 2,
+              lineHeight: 1,
+              color: "#fff",
+              textShadow: "0 4px 24px rgba(0,0,0,0.5)",
+            }}
+          >
+            {film.title}
+          </Typography>
+          <Stack direction="row" spacing={2} sx={{ mt: 2, flexWrap: "wrap", gap: 1 }}>
+            <Chip
+              icon={<StarIcon />}
+              label={`${film.rate.toFixed(1)} / 10`}
+              sx={{
+                backgroundColor: "rgba(11,15,25,0.75)",
+                color: GOLD,
+                "& .MuiChip-icon": { color: GOLD },
+                fontSize: 15,
+              }}
+            />
+            <Chip
+              icon={<CalendarMonthIcon />}
+              label={film.year}
+              sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
+            />
+            <Chip
+              icon={<AccessTimeIcon />}
+              label={`${film.time} dk`}
+              sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
+            />
+            <Chip
+              icon={<PersonIcon />}
+              label={film.directorName}
+              sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
+            />
+          </Stack>
+        </Container>
+      </Box>
 
-      {user && (
-        <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-          <Button variant={inWatchlist ? "outlined" : "contained"} onClick={handleToggleWatchlist}>
-            {inWatchlist ? "İzleme Listemden Çıkar" : "İzleme Listeme Ekle"}
-          </Button>
-          <Button variant={isWatched ? "outlined" : "contained"} onClick={handleToggleWatched}>
-            {isWatched ? "İzlenmedi Olarak İşaretle" : "İzledim Olarak İşaretle"}
-          </Button>
-          {user.role === "Admin" && (
-            <>
-              <Button component={Link} to={`/films/${filmId}/edit`} variant="text">
-                Düzenle
-              </Button>
-              <Button color="error" variant="text" onClick={() => setDeleteOpen(true)}>
-                Sil
-              </Button>
-            </>
-          )}
-        </Stack>
-      )}
+      <Container sx={{ py: 4 }} maxWidth="md">
+        <Typography sx={{ mb: 3, fontSize: 17, color: "text.primary", lineHeight: 1.7 }}>
+          {film.description}
+        </Typography>
 
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        Yorumlar
-      </Typography>
-      <ReviewList reviews={reviews} />
+        {user && (
+          <Stack direction="row" spacing={1.5} sx={{ mb: 4, flexWrap: "wrap", gap: 1 }}>
+            <Button
+              variant={inWatchlist ? "outlined" : "contained"}
+              startIcon={inWatchlist ? <BookmarkRemoveIcon /> : <BookmarkAddIcon />}
+              onClick={handleToggleWatchlist}
+            >
+              {inWatchlist ? "İzleme Listemden Çıkar" : "İzleme Listeme Ekle"}
+            </Button>
+            <Button
+              variant={isWatched ? "outlined" : "contained"}
+              color={isWatched ? "primary" : "secondary"}
+              startIcon={isWatched ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              onClick={handleToggleWatched}
+              sx={!isWatched ? { backgroundColor: "#2a3347", color: "#fff", "&:hover": { backgroundColor: "#3a4560" } } : undefined}
+            >
+              {isWatched ? "İzlenmedi Olarak İşaretle" : "İzledim Olarak İşaretle"}
+            </Button>
+            {user.role === "Admin" && (
+              <>
+                <Button
+                  component={Link}
+                  to={`/films/${filmId}/edit`}
+                  variant="text"
+                  startIcon={<EditIcon />}
+                >
+                  Düzenle
+                </Button>
+                <Button
+                  color="error"
+                  variant="text"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => setDeleteOpen(true)}
+                >
+                  Sil
+                </Button>
+              </>
+            )}
+          </Stack>
+        )}
 
-      {user && (
-        <ReviewForm onSubmit={handleReviewSubmit} submitting={reviewSubmitting} error={reviewError} />
-      )}
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Yorumlar
+          <Box component="span" sx={{ color: "text.secondary", fontWeight: 400, fontSize: 18, ml: 1 }}>
+            ({reviews.length})
+          </Box>
+        </Typography>
+        <ReviewList reviews={reviews} />
 
-      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-        <DialogTitle>Bu filmi silmek istediğinize emin misiniz?</DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setDeleteOpen(false)}>Vazgeç</Button>
-          <Button color="error" onClick={handleDelete}>
-            Sil
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        {user && (
+          <ReviewForm
+            onSubmit={handleReviewSubmit}
+            submitting={reviewSubmitting}
+            error={reviewError}
+          />
+        )}
+
+        <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
+          <DialogTitle>Bu filmi silmek istediğinize emin misiniz?</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => setDeleteOpen(false)}>Vazgeç</Button>
+            <Button color="error" variant="contained" onClick={handleDelete}>
+              Sil
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </Box>
   );
 }

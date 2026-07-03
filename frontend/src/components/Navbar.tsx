@@ -1,6 +1,26 @@
 import { AppBar, Toolbar, Button, Typography, Box } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { GOLD } from "../theme";
+
+function NavButton({ to, children }: { to: string; children: React.ReactNode }) {
+  const location = useLocation();
+  const active = location.pathname === to;
+  return (
+    <Button
+      component={Link}
+      to={to}
+      sx={{
+        color: active ? GOLD : "text.secondary",
+        fontWeight: active ? 700 : 500,
+        "&:hover": { color: "#fff", backgroundColor: "rgba(255,255,255,0.05)" },
+      }}
+    >
+      {children}
+    </Button>
+  );
+}
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -12,51 +32,79 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        backgroundColor: "rgba(11, 15, 25, 0.8)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        backgroundImage: "none",
+      }}
+    >
       <Toolbar>
-        <Typography
-          variant="h6"
+        <Box
           component={Link}
           to="/"
-          sx={{ flexGrow: 1, color: "inherit", textDecoration: "none" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            textDecoration: "none",
+            flexGrow: 1,
+          }}
         >
-          FilmIzlemeApp
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1 }}>
-          <Button color="inherit" component={Link} to="/">
-            Ana Sayfa
-          </Button>
+          <LocalMoviesIcon sx={{ color: GOLD, fontSize: 28 }} />
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: 26,
+              letterSpacing: 1.5,
+              color: "#fff",
+              lineHeight: 1,
+            }}
+          >
+            FILM<Box component="span" sx={{ color: GOLD }}>IZLEME</Box>
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+          <NavButton to="/">Ana Sayfa</NavButton>
           {user ? (
             <>
-              <Button color="inherit" component={Link} to="/watchlist">
-                İzleme Listem
-              </Button>
-              <Button color="inherit" component={Link} to="/watched">
-                İzlediklerim
-              </Button>
+              <NavButton to="/watchlist">İzleme Listem</NavButton>
+              <NavButton to="/watched">İzlediklerim</NavButton>
               {user.role === "Admin" && (
                 <>
-                  <Button color="inherit" component={Link} to="/films/new">
-                    Film Ekle
-                  </Button>
-                  <Button color="inherit" component={Link} to="/admin/users">
-                    Kullanıcılar
-                  </Button>
+                  <NavButton to="/films/new">Film Ekle</NavButton>
+                  <NavButton to="/admin/users">Kullanıcılar</NavButton>
                 </>
               )}
-              <Button color="inherit" component={Link} to="/profile">
-                {user.username}
-              </Button>
-              <Button color="inherit" onClick={handleLogout}>
+              <NavButton to="/profile">{user.username}</NavButton>
+              <Button
+                onClick={handleLogout}
+                variant="outlined"
+                size="small"
+                sx={{
+                  ml: 1,
+                  borderColor: "rgba(255,255,255,0.2)",
+                  color: "text.secondary",
+                  "&:hover": { borderColor: GOLD, color: GOLD },
+                }}
+              >
                 Çıkış Yap
               </Button>
             </>
           ) : (
             <>
-              <Button color="inherit" component={Link} to="/login">
-                Giriş Yap
-              </Button>
-              <Button color="inherit" component={Link} to="/register">
+              <NavButton to="/login">Giriş Yap</NavButton>
+              <Button
+                component={Link}
+                to="/register"
+                variant="contained"
+                size="small"
+                sx={{ ml: 1 }}
+              >
                 Kayıt Ol
               </Button>
             </>
