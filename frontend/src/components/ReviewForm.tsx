@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Box, TextField, Button, Slider, Typography } from "@mui/material";
+import { Box, TextField, Button, Slider, Typography, Paper } from "@mui/material";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import ErrorAlert from "./ErrorAlert";
+import { GOLD } from "../theme";
 
 interface ReviewFormProps {
   onSubmit: (comment: string, rating: number) => Promise<void>;
@@ -20,12 +22,25 @@ export default function ReviewForm({ onSubmit, submitting, error }: ReviewFormPr
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+    <Paper
+      component="form"
+      onSubmit={handleSubmit}
+      elevation={0}
+      sx={{
+        mt: 3,
+        p: 3,
+        border: "1px solid rgba(255,255,255,0.08)",
+        backgroundColor: "rgba(255,255,255,0.02)",
+      }}
+    >
       {error && <ErrorAlert message={error} />}
-      <Typography variant="subtitle1">Yorum Yap</Typography>
-      <Box sx={{ maxWidth: 300, my: 2 }}>
-        <Typography variant="body2" color="text.secondary">
-          Puan: {rating} / 10
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+        <RateReviewIcon sx={{ color: GOLD }} />
+        <Typography variant="h6">Yorum Yap</Typography>
+      </Box>
+      <Box sx={{ maxWidth: 340, mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+          Puanın: <Box component="span" sx={{ color: GOLD, fontWeight: 700 }}>{rating} / 10</Box>
         </Typography>
         <Slider
           value={rating}
@@ -46,9 +61,9 @@ export default function ReviewForm({ onSubmit, submitting, error }: ReviewFormPr
         fullWidth
         required
       />
-      <Button type="submit" variant="contained" sx={{ mt: 1 }} disabled={submitting}>
+      <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={submitting}>
         Gönder
       </Button>
-    </Box>
+    </Paper>
   );
 }

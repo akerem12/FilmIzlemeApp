@@ -2,8 +2,8 @@ import { Box, CircularProgress } from "@mui/material";
 
 export default function LoadingSpinner() {
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-      <CircularProgress />
+    <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+      <CircularProgress color="primary" />
     </Box>
   );
 }

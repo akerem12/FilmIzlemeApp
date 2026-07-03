@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Container, Typography } from "@mui/material";
+import { Container, Typography, Paper, Box } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import { useParams, useNavigate } from "react-router-dom";
 import { getFilm, updateFilm } from "../api/films";
 import { getErrorMessage } from "../api/errorMessage";
@@ -8,6 +9,7 @@ import type { FilmDetail, FilmCreateDto, FilmUpdateDto } from "../types";
 import FilmForm from "../components/FilmForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
+import { GOLD } from "../theme";
 
 export default function FilmEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -47,17 +49,24 @@ export default function FilmEditPage() {
   if (!film) return null;
 
   return (
-    <Container maxWidth="sm" sx={{ py: 3 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Filmi Düzenle
-      </Typography>
-      <FilmForm
-        mode="edit"
-        initialValues={film}
-        onSubmit={handleSubmit}
-        submitting={submitting}
-        error={submitError}
-      />
+    <Container maxWidth="sm" sx={{ py: 6 }}>
+      <Paper
+        className="fade-in-up"
+        elevation={0}
+        sx={{ p: 4, border: "1px solid rgba(255,255,255,0.08)" }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+          <EditIcon sx={{ color: GOLD, fontSize: 30 }} />
+          <Typography variant="h5">Filmi Düzenle</Typography>
+        </Box>
+        <FilmForm
+          mode="edit"
+          initialValues={film}
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          error={submitError}
+        />
+      </Paper>
     </Container>
   );
 }

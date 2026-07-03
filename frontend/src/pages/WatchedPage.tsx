@@ -1,20 +1,14 @@
 import { useEffect, useState } from "react";
-import {
-  Container,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Stack,
-} from "@mui/material";
-import { Link } from "react-router-dom";
+import { Container, Typography, Box, Stack } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { getWatched, unmarkWatched } from "../api/watched";
 import { getErrorMessage } from "../api/errorMessage";
 import { useAuth } from "../context/AuthContext";
 import type { WatchedFilm } from "../types";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorAlert from "../components/ErrorAlert";
+import FilmListRow from "../components/FilmListRow";
+import { GOLD } from "../theme";
 
 export default function WatchedPage() {
   const { user } = useAuth();
@@ -39,39 +33,30 @@ export default function WatchedPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <Container sx={{ py: 3 }} maxWidth="md">
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        İzlediklerim
-      </Typography>
+    <Container sx={{ py: 5 }} maxWidth="md" className="fade-in-up">
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
+        <VisibilityIcon sx={{ color: GOLD, fontSize: 32 }} />
+        <Typography variant="h4">İzlediklerim</Typography>
+      </Box>
       {error && <ErrorAlert message={error} />}
       {items.length === 0 && !error && (
-        <Typography color="text.secondary">Henüz izlediğiniz film yok.</Typography>
+        <Typography color="text.secondary">
+          Henüz izlediğin film yok. İzlediğin filmleri işaretleyerek burada takip et!
+        </Typography>
       )}
-      <List>
+      <Stack spacing={1.5}>
         {items.map((item) => (
-          <ListItem
+          <FilmListRow
             key={item.filmId}
-            divider
-            secondaryAction={
-              <Stack direction="row" spacing={1}>
-                <Button component={Link} to={`/films/${item.filmId}`} size="small">
-                  Görüntüle
-                </Button>
-                <Button color="error" size="small" onClick={() => handleRemove(item.filmId)}>
-                  Kaldır
-                </Button>
-              </Stack>
-            }
-          >
-            <ListItemText
-              primary={item.title}
-              secondary={`${item.year} · ${item.time} dk · İzlenme: ${new Date(
-                item.watchedAt
-              ).toLocaleDateString("tr-TR")}`}
-            />
-          </ListItem>
+            filmId={item.filmId}
+            title={item.title}
+            year={item.year}
+            time={item.time}
+            dateLabel={`İzlenme: ${new Date(item.watchedAt).toLocaleDateString("tr-TR")}`}
+            onRemove={() => handleRemove(item.filmId)}
+          />
         ))}
-      </List>
+      </Stack>
     </Container>
   );
 }
