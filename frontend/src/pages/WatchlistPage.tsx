@@ -49,9 +49,6 @@ export default function WatchlistPage() {
           <FilmListRow
             key={item.filmId}
             filmId={item.filmId}
-            title={item.title}
-            year={item.year}
-            time={item.time}
             dateLabel={`Eklenme: ${new Date(item.addedAt).toLocaleDateString("tr-TR")}`}
             onRemove={() => handleRemove(item.filmId)}
           />

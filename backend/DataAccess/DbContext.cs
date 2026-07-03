@@ -1,4 +1,4 @@
-﻿using Entities.Concrete;
+using Entities.Concrete;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ namespace DataAccess
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Film> Films => Set<Film>();
         public DbSet<User> Users => Set<User>();
         public DbSet<WatchedFilm> WatchedFilms => Set<WatchedFilm>();
         public DbSet<Review> Reviews => Set<Review>();
@@ -28,29 +27,15 @@ namespace DataAccess
                 .WithMany(u => u.WatchedByUsers)
                 .HasForeignKey(w => w.UserId);
 
-            modelBuilder.Entity<WatchedFilm>()
-                .HasOne(w => w.Film)
-                .WithMany(f => f.WatchedByUsers)
-                .HasForeignKey(w => w.FilmId);
-
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reviews)
                 .HasForeignKey(r => r.UserId);
 
-            modelBuilder.Entity<Review>()
-                .HasOne(r => r.Film)
-                .WithMany(f => f.Reviews)
-                .HasForeignKey(r => r.FilmId);
             modelBuilder.Entity<WatchList>()
                 .HasOne(w => w.User)
                 .WithMany()
                 .HasForeignKey(w => w.UserId);
-
-            modelBuilder.Entity<WatchList>()
-                .HasOne(w => w.Film)
-                .WithMany()
-                .HasForeignKey(w => w.FilmId);
         }
     }
 }

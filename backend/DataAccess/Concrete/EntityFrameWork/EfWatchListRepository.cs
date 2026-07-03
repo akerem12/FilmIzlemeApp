@@ -40,7 +40,6 @@ namespace DataAccess.Concrete.EntityFrameWork
         public List<WatchList> GetByUserId(int userId)
         {
             return _context.WatchLists
-                .Include(w => w.Film)
                 .Where(w => w.UserId == userId)
                 .ToList();
         }

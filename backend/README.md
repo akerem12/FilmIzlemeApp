@@ -23,20 +23,28 @@ Bu proje, kullanıcıların film arayabileceği, izlemek istedikleri filmleri ek
 - **SQL Server**
 - **Swagger**
 - **Katmanlı Mimari (Entity, DataAccess, Business, WebAPI)**
+- **TMDb (The Movie Database) API** — film verisi (isim, poster, açıklama, puan)
 
 ---
 
+## 🎞 TMDb API Kurulumu
 
+Film verisi artık yerel veritabanında değil, [TMDb](https://www.themoviedb.org/) üzerinden çekiliyor. Çalıştırmadan önce:
+
+1. themoviedb.org'da ücretsiz hesap açıp Settings → API'den bir "API Key (v3 auth)" üretin.
+2. `WebAPI` dizininde bu key'i local secrets'a ekleyin (repoya veya appsettings.json'a yazılmaz):
+   ```
+   dotnet user-secrets set "Tmdb:ApiKey" "<KEY>"
+   ```
+
+---
 
 ##  API Endpoint Listesi
 
-### Filmler
-- `GET /api/Film`
-- `GET /api/Film/{id}`
-- `POST /api/Film`
-- `PUT /api/Film/{id}`
-- `DELETE /api/Film/{id}`
-- `GET /api/Film/search`
+### Filmler (TMDb'den canlı çekilir)
+- `GET /api/Film` — popüler filmler
+- `GET /api/Film/{id}` — film detayı
+- `GET /api/Film/search?title=...` — TMDb'de film arama
 
 ### Kullanıcılar
 - `POST /api/User`

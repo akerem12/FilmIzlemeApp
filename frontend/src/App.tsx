@@ -7,8 +7,6 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import FilmDetailPage from "./pages/FilmDetailPage";
-import FilmCreatePage from "./pages/FilmCreatePage";
-import FilmEditPage from "./pages/FilmEditPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import WatchedPage from "./pages/WatchedPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -33,8 +31,6 @@ export default function App() {
           </Route>
 
           <Route element={<AdminRoute />}>
-            <Route path="/films/new" element={<FilmCreatePage />} />
-            <Route path="/films/:id/edit" element={<FilmEditPage />} />
             <Route path="/admin/users" element={<AdminUsersPage />} />
           </Route>
 

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container, TextField, Grid, Typography, Box, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { getFilms } from "../api/films";
+import { getFilms, searchFilms } from "../api/films";
 import { getErrorMessage } from "../api/errorMessage";
 import type { FilmListItem } from "../types";
 import FilmCard from "../components/FilmCard";
@@ -14,6 +14,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     getFilms()
@@ -22,9 +23,21 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const visibleFilms = films.filter((f) =>
-    f.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    const term = searchTerm.trim();
+
+    debounceRef.current = setTimeout(() => {
+      setLoading(true);
+      const request = term ? searchFilms(term) : getFilms();
+      request
+        .then(setFilms)
+        .catch((err) => setError(getErrorMessage(err, "Filmler yüklenemedi.")))
+        .finally(() => setLoading(false));
+    }, 400);
+
+    return () => clearTimeout(debounceRef.current);
+  }, [searchTerm]);
 
   return (
     <Container sx={{ py: 5 }}>
@@ -64,18 +77,20 @@ export default function HomePage() {
 
       {loading && <LoadingSpinner />}
       {error && <ErrorAlert message={error} />}
-      {!loading && !error && visibleFilms.length === 0 && (
+      {!loading && !error && films.length === 0 && (
         <Typography color="text.secondary" sx={{ textAlign: "center" }}>
           Film bulunamadı.
         </Typography>
       )}
-      <Grid container spacing={3}>
-        {visibleFilms.map((film) => (
-          <Grid key={film.id} size={{ xs: 12, sm: 6, md: 4 }}>
-            <FilmCard film={film} />
-          </Grid>
-        ))}
-      </Grid>
+      {!loading && !error && (
+        <Grid container spacing={3}>
+          {films.map((film) => (
+            <Grid key={film.id} size={{ xs: 12, sm: 6, md: 4 }}>
+              <FilmCard film={film} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 }

@@ -2,10 +2,8 @@
 export interface FilmListItem {
   id: number;
   title: string;
-  time: number;
+  posterUrl: string | null;
   year: number;
-  directorName: string;
-  directorId: number;
   rate: number;
 }
 
@@ -13,26 +11,7 @@ export interface FilmDetail {
   id: number;
   title: string;
   description: string;
-  time: number;
-  year: number;
-  directorName: string;
-  directorId: number;
-  rate: number;
-}
-
-export interface FilmCreateDto {
-  title: string;
-  description: string;
-  time: number;
-  year: number;
-  directorId: number;
-  directorName: string;
-  rate: number;
-}
-
-export interface FilmUpdateDto {
-  title: string;
-  description: string;
+  posterUrl: string | null;
   time: number;
   year: number;
   rate: number;
@@ -61,7 +40,6 @@ export interface UserReview {
   rating: number;
   createdAt: string;
   filmId: number;
-  filmTitle: string;
 }
 
 // ---- Users ----
@@ -95,16 +73,10 @@ export interface UserRoleUpdateDto {
 // ---- Watched / Watchlist ----
 export interface WatchedFilm {
   filmId: number;
-  title: string;
-  time: number;
-  year: number;
   watchedAt: string;
 }
 
 export interface WatchListFilm {
   filmId: number;
-  title: string;
-  time: number;
-  year: number;
   addedAt: string;
 }

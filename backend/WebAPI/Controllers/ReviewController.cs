@@ -10,13 +10,11 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class ReviewController : ControllerBase
     {
-        private readonly IFilmService _filmService;
         private readonly IReviewService _reviewService;
 
-        public ReviewController(IReviewService reviewService, IFilmService filmService)
+        public ReviewController(IReviewService reviewService)
         {
             _reviewService = reviewService;
-            _filmService = filmService;
         }
         [HttpPost]
         public IActionResult AddReview([FromBody] ReviewCreateDto dto)
@@ -32,10 +30,7 @@ namespace WebAPI.Controllers
 
             _reviewService.add(review);
 
-            // Film’in ortalama puanını güncelle
-            _filmService.UpdateFilmRating(dto.FilmId);
-
-            return Ok(new { message = "Yorum eklendi ve puan güncellendi." });
+            return Ok(new { message = "Yorum eklendi." });
         }
 
         [HttpGet("film/{filmId}")]
@@ -65,8 +60,7 @@ namespace WebAPI.Controllers
                     r.Comment,
                     r.Rating,
                     r.CreatedAt,
-                    r.FilmId,
-                    FilmTitle = r.Film.Title
+                    r.FilmId
                 }).ToList();
 
             return Ok(reviews);
