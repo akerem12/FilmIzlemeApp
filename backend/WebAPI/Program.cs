@@ -28,8 +28,7 @@ builder.Services.AddCors(options =>
 
 
 // ?? Service ve Repository ba��ml�l�klar� (DI)
-builder.Services.AddScoped<IFilmService, FilmManager>();
-builder.Services.AddScoped<IFilmRepository, EfFilmRepository>();
+builder.Services.AddHttpClient<IFilmService, TmdbFilmManager>();
 
 builder.Services.AddScoped<IUserService, UserManager>();
 builder.Services.AddScoped<IUserRepository, EfUserRepository>();

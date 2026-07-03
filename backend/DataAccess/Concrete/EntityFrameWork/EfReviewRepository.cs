@@ -26,12 +26,12 @@ namespace DataAccess.Concrete.EntityFrameWork
 
         public List<Review> GetFilmId(int filmId)
         {
-            return _context.Reviews.Include(r=>r.User).Where(r=>r.Film.Id == filmId).ToList();
+            return _context.Reviews.Include(r => r.User).Where(r => r.FilmId == filmId).ToList();
         }
 
         public List<Review> GetUserId(int userId)
         {
-            return _context.Reviews.Include(r => r.Film).Where(r => r.User.Id == userId).ToList();
+            return _context.Reviews.Where(r => r.UserId == userId).ToList();
         }
     }
 }

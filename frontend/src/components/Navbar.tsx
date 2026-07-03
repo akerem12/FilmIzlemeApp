@@ -75,10 +75,7 @@ export default function Navbar() {
               <NavButton to="/watchlist">İzleme Listem</NavButton>
               <NavButton to="/watched">İzlediklerim</NavButton>
               {user.role === "Admin" && (
-                <>
-                  <NavButton to="/films/new">Film Ekle</NavButton>
-                  <NavButton to="/admin/users">Kullanıcılar</NavButton>
-                </>
+                <NavButton to="/admin/users">Kullanıcılar</NavButton>
               )}
               <NavButton to="/profile">{user.username}</NavButton>
               <Button

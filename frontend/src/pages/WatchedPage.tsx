@@ -49,9 +49,6 @@ export default function WatchedPage() {
           <FilmListRow
             key={item.filmId}
             filmId={item.filmId}
-            title={item.title}
-            year={item.year}
-            time={item.time}
             dateLabel={`İzlenme: ${new Date(item.watchedAt).toLocaleDateString("tr-TR")}`}
             onRemove={() => handleRemove(item.filmId)}
           />

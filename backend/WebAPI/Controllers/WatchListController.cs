@@ -23,9 +23,6 @@ namespace WebAPI.Controllers
                 .Select(w => new
                 {
                     w.FilmId,
-                    w.Film.Title,
-                    w.Film.time,
-                    w.Film.year,
                     AddedAt = w.AddedDate
                 }).ToList();
 

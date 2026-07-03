@@ -30,7 +30,7 @@ namespace DataAccess.Concrete.EntityFrameWork
 
         public List<WatchedFilm> getWatchedByUser(int userId)
         {
-            return _context.WatchedFilms.Include(w =>w.Film).Where(w=> w.UserId==userId).ToList();
+            return _context.WatchedFilms.Where(w => w.UserId == userId).ToList();
         }
         public void Remove(int userId, int filmId)
         {

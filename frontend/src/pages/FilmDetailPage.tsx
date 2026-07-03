@@ -1,27 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  Container,
-  Typography,
-  Chip,
-  Button,
-  Stack,
-  Box,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-} from "@mui/material";
+import { useParams } from "react-router-dom";
+import { Container, Typography, Chip, Button, Stack, Box } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import PersonIcon from "@mui/icons-material/Person";
 import BookmarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookmarkRemoveIcon from "@mui/icons-material/BookmarkRemove";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { getFilm, deleteFilm } from "../api/films";
+import { getFilm } from "../api/films";
 import { getReviewsByFilm, addReview } from "../api/reviews";
 import { getWatchlist, addToWatchlist, removeFromWatchlist } from "../api/watchlist";
 import { getWatched, markWatched, unmarkWatched } from "../api/watched";
@@ -39,7 +26,6 @@ export default function FilmDetailPage() {
   const { id } = useParams<{ id: string }>();
   const filmId = Number(id);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const [film, setFilm] = useState<FilmDetail | null>(null);
   const [reviews, setReviews] = useState<FilmReview[]>([]);
@@ -51,8 +37,6 @@ export default function FilmDetailPage() {
 
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewError, setReviewError] = useState<string | null>(null);
-
-  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const loadFilmAndReviews = useCallback(async () => {
     const [filmData, reviewsData] = await Promise.all([
@@ -118,12 +102,6 @@ export default function FilmDetailPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!user) return;
-    await deleteFilm(filmId, user.id);
-    navigate("/");
-  };
-
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorAlert message={error} />;
   if (!film) return null;
@@ -134,7 +112,11 @@ export default function FilmDetailPage() {
       <Box
         sx={{
           position: "relative",
-          background: posterGradient(film.title),
+          background: film.posterUrl
+            ? `linear-gradient(rgba(11,15,25,0.55), rgba(11,15,25,0.55)), url(${film.posterUrl})`
+            : posterGradient(film.title),
+          backgroundSize: "cover",
+          backgroundPosition: "center 15%",
           overflow: "hidden",
         }}
       >
@@ -172,19 +154,16 @@ export default function FilmDetailPage() {
             />
             <Chip
               icon={<CalendarMonthIcon />}
-              label={film.year}
+              label={film.year || "—"}
               sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
             />
-            <Chip
-              icon={<AccessTimeIcon />}
-              label={`${film.time} dk`}
-              sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
-            />
-            <Chip
-              icon={<PersonIcon />}
-              label={film.directorName}
-              sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
-            />
+            {film.time > 0 && (
+              <Chip
+                icon={<AccessTimeIcon />}
+                label={`${film.time} dk`}
+                sx={{ backgroundColor: "rgba(11,15,25,0.75)" }}
+              />
+            )}
           </Stack>
         </Container>
       </Box>
@@ -212,26 +191,6 @@ export default function FilmDetailPage() {
             >
               {isWatched ? "İzlenmedi Olarak İşaretle" : "İzledim Olarak İşaretle"}
             </Button>
-            {user.role === "Admin" && (
-              <>
-                <Button
-                  component={Link}
-                  to={`/films/${filmId}/edit`}
-                  variant="text"
-                  startIcon={<EditIcon />}
-                >
-                  Düzenle
-                </Button>
-                <Button
-                  color="error"
-                  variant="text"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => setDeleteOpen(true)}
-                >
-                  Sil
-                </Button>
-              </>
-            )}
           </Stack>
         )}
 
@@ -250,16 +209,6 @@ export default function FilmDetailPage() {
             error={reviewError}
           />
         )}
-
-        <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)}>
-          <DialogTitle>Bu filmi silmek istediğinize emin misiniz?</DialogTitle>
-          <DialogActions>
-            <Button onClick={() => setDeleteOpen(false)}>Vazgeç</Button>
-            <Button color="error" variant="contained" onClick={handleDelete}>
-              Sil
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Container>
     </Box>
   );
